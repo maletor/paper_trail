@@ -140,6 +140,15 @@ module PaperTrail
         changed? and !(changed - self.class.ignore).empty?
       end
 
+      # Returns an array of hashes, where each hash specifies the +:attribute+,
+      # value +:before+ the change, and value +:after+ the change.
+      def differences(before, after)
+        before.diff(after).keys.sort.inject([]) do |diffs, k|
+          diff = { :attribute => k, :before => before[k], :after => after[k] }
+          diffs << diff; diffs
+        end
+      end
+
       # Returns `true` if PaperTrail is globally enabled and active for this class,
       # `false` otherwise.
       def switched_on?

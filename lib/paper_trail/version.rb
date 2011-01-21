@@ -1,5 +1,7 @@
 class Version < ActiveRecord::Base
   belongs_to :item, :polymorphic => true
+  belongs_to :account
+  before_save :set_account_id
   validates_presence_of :event
 
   # Restore the item from this version.
@@ -85,6 +87,10 @@ class Version < ActiveRecord::Base
   end
 
   private
+  def set_account_id
+      self.account_id = self.whodunnit.id if self.whodunnit.is_a?(ActiveRecord::Base)
+      return true
+  end
 
   # Restore the `model`'s has_one associations as they were when this version was
   # superseded by the next (because that's what the user was looking at when they

@@ -121,6 +121,15 @@ module PaperTrail
         subsequent_version.reify if subsequent_version
       end
 
+      protected
+
+      # Override this method in your model to transform the whodunnit string
+      # into something domain-specific. For example, to fetch a User instance by
+      # its id.
+      def transform_whodunnit(whodunnit)
+        whodunnit
+      end
+
       private
 
       def record_create

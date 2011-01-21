@@ -67,6 +67,38 @@ module PaperTrail
         versions.last.try :whodunnit
       end
 
+      # Walk the versions to construct an audit trail of the edits made
+      # over time, and by whom.
+      def audit_trail(options={})
+        # ignore updated_at by default because the version's created_at is good enough
+        options[:attributes_to_ignore] = Array(options[:attributes_to_ignore] || %w(updated_at))
+        audit_trail = []
+
+        versions_desc = versions_including_current_in_descending_order
+
+        versions_desc.each_with_index do |version, index|
+          previous_version = versions_desc[index + 1]
+          break if previous_version.nil?
+
+          attributes_after = yaml_to_hash(version.object)
+          attributes_before = yaml_to_hash(previous_version.object)
+
+          # remove some attributes that we don't need to report
+          [attributes_before, attributes_after].each do |hash|
+            hash.reject! { |k,v| options[:attributes_to_ignore].include?(k) }
+          end
+
+          audit_trail << {
+            :event => previous_version.event,
+            :changed_by => transform_whodunnit(previous_version.whodunnit),
+            :changed_at => previous_version.created_at,
+            :changes => differences(attributes_before, attributes_after)
+            }
+        end
+
+        audit_trail
+      end
+
       # Returns the object (not a Version) as it was at the given timestamp.
       def version_at(timestamp)
         # Because a version stores how its object looked *before* the change,

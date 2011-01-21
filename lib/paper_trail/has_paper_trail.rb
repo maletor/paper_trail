@@ -164,6 +164,15 @@ module PaperTrail
         data.merge(PaperTrail.controller_info || {})
       end
 
+      def object_to_string(object)
+        object.attributes.to_yaml
+      end
+
+      def yaml_to_hash(yaml)
+        return {} if yaml.nil?
+        YAML::load(yaml).to_hash
+      end
+
       def item_before_change
         previous = self.clone
         previous.id = id

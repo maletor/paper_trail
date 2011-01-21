@@ -181,6 +181,14 @@ module PaperTrail
         end
       end
 
+      def versions_including_current_in_descending_order
+        v = self.versions.dup
+        v << Version.new(:event => 'update',
+          :object => object_to_string(self),
+          :created_at => self.updated_at)
+        v.reverse # newest first
+      end
+
       # Returns `true` if PaperTrail is globally enabled and active for this class,
       # `false` otherwise.
       def switched_on?

@@ -72,6 +72,7 @@ module PaperTrail
       def audit_trail(options={})
         # ignore updated_at by default because the version's created_at is good enough
         options[:attributes_to_ignore] = Array(options[:attributes_to_ignore] || %w(updated_at))
+        options[:attributes_to_ignore] = options[:attributes_to_ignore] & self.class.ignore
         audit_trail = []
 
         versions_desc = versions_including_current_in_descending_order

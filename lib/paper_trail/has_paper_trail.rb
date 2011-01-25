@@ -92,7 +92,8 @@ module PaperTrail
             :event => previous_version.event,
             :changed_by => transform_whodunnit(previous_version.whodunnit),
             :changed_at => previous_version.created_at,
-            :changes => differences(attributes_before, attributes_after)
+            :changes => differences(attributes_before, attributes_after),
+            :index => previous_version.index
             }
         end
 

@@ -189,7 +189,11 @@ module PaperTrail
       end
 
       def changed_and_we_care?
-        changed? and !(changed - self.class.ignore).empty?
+        changed? and !(changed - self.class.ignore).empty? and changed_by_admin?
+      end
+
+      def changed_by_admin?
+        transform_whodunnit(versions.last.whodunnit).roles.include?(Role.find_by_name("admin"))
       end
 
       # Returns an array of hashes, where each hash specifies the +:attribute+,
